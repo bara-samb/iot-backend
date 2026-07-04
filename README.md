@@ -40,6 +40,10 @@ Installation des dépendances
 Installer les dépendances principales :
 
 npm install express mongoose serialport @serialport/parser-readline dotenv cors
+npm install morgan
+npm install helmet
+npm install express-validator
+npm install socket.io
 
 Installer Nodemon pour le développement :
 

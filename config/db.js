@@ -1,43 +1,43 @@
 /**
- * ------------------------------------------------------------------
- * Fichier : db.js
- * ------------------------------------------------------------------
- * Rôle :
- * Ce fichier est responsable de la connexion entre l'application
- * Node.js et la base de données MongoDB.
+ * ============================================================
+ * Configuration de la connexion à MongoDB
+ * ------------------------------------------------------------
+ * Ce module établit la connexion entre l'application Node.js
+ * et la base de données MongoDB Atlas.
  *
- * Il utilise la bibliothèque Mongoose afin de simplifier les échanges
- * avec MongoDB.
- *
- * La chaîne de connexion est récupérée depuis le fichier .env grâce à
- * la variable d'environnement MONGO_URI.
- * ------------------------------------------------------------------
+ * La chaîne de connexion est stockée dans le fichier .env
+ * afin de ne jamais exposer les informations sensibles.
+ * ============================================================
  */
 
-// Importation de la bibliothèque Mongoose
 const mongoose = require("mongoose");
 
 /**
- * Fonction asynchrone permettant d'établir la connexion à MongoDB.
+ * Fonction de connexion à MongoDB
  */
 const connectDB = async () => {
 
     try {
 
-        // Connexion à la base de données
         await mongoose.connect(process.env.MONGO_URI);
 
-        console.log("MongoDB connecté avec succès !");
+        console.log("=======================================");
+        console.log(" MongoDB connecté avec succès");
+        console.log("=======================================");
 
-    } catch (error) {
-
-        // Affichage de l'erreur en cas d'échec
-        console.error("Erreur de connexion :", error.message);
-
-        // Arrêt du serveur
-        process.exit(1);
     }
+
+    catch (error) {
+
+        console.error("=======================================");
+        console.error("Erreur de connexion MongoDB");
+        console.error(error.message);
+        console.error("=======================================");
+
+        process.exit(1);
+
+    }
+
 };
 
-// Exportation de la fonction afin de pouvoir l'utiliser dans server.js
 module.exports = connectDB;

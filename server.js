@@ -1,82 +1,105 @@
 /**
- * ------------------------------------------------------------------
- * Fichier : server.js
- * ------------------------------------------------------------------
- * Rôle :
- * Ce fichier constitue le point d'entrée principal de l'application.
- *
- * Il est chargé de :
- *  - charger les variables d'environnement ;
- *  - établir la connexion à MongoDB ;
- *  - démarrer la communication avec l'Arduino ;
- *  - créer le serveur Express ;
- *  - configurer les middlewares ;
- *  - déclarer les routes de l'API REST ;
- *  - lancer le serveur HTTP.
- * ------------------------------------------------------------------
+ * ============================================================
+ * Point d'entrée principal de l'application
+ * ------------------------------------------------------------
+ * Ce fichier :
+ *  - Charge les variables d'environnement
+ *  - Initialise Express
+ *  - Configure les middlewares
+ *  - Connecte MongoDB
+ *  - Déclare les routes
+ *  - Lance le serveur
+ * ============================================================
  */
+
+require("dotenv").config();
 
 const express = require("express");
-const dotenv = require("dotenv");
+const mongoose = require("mongoose");
 const cors = require("cors");
+const helmet = require("helmet");
+const morgan = require("morgan");
 
-// Importation de la connexion MongoDB
 const connectDB = require("./config/db");
 
-// Importation des routes de l'API
 const sensorRoutes = require("./routes/sensorRoutes");
 
-// Chargement des variables d'environnement (.env)
-dotenv.config();
+const errorHandler = require("./middleware/errorHandler");
 
-// Connexion à MongoDB
-connectDB();
-
-// Démarrage de la lecture du port série (Arduino)
-require("./serial/serialReader");
-
-// Création de l'application Express
 const app = express();
 
-/**
- * ==========================
- * Configuration des middlewares
- * ==========================
- */
+/*
+|--------------------------------------------------------------------------
+| Connexion à MongoDB
+|--------------------------------------------------------------------------
+*/
 
-// Autorise les requêtes provenant d'autres applications
+connectDB();
+
+/*
+|--------------------------------------------------------------------------
+| Middlewares
+|--------------------------------------------------------------------------
+*/
+
+// Sécurisation de l'API
+app.use(helmet());
+
+// Autoriser les requêtes provenant du Dashboard
 app.use(cors());
 
-// Permet de recevoir les données JSON
+// Lecture des données JSON
 app.use(express.json());
 
-/**
- * ==========================
- * Déclaration des routes
- * ==========================
- */
+// Journalisation des requêtes HTTP
+app.use(morgan("dev"));
 
-// Toutes les routes commenceront par /api/sensors
-app.use("/api/sensors", sensorRoutes);
+/*
+|--------------------------------------------------------------------------
+| Route de test
+|--------------------------------------------------------------------------
+*/
 
-/**
- * Route de test
- * Permet de vérifier rapidement que le serveur fonctionne.
- */
 app.get("/", (req, res) => {
 
-    res.send("Bienvenue sur le serveur IoT !");
+    res.json({
+
+        success: true,
+
+        message: "Bienvenue sur l'API IoT ESP32"
+
+    });
 
 });
 
-// Port utilisé par le serveur
+/*
+|--------------------------------------------------------------------------
+| Routes API
+|--------------------------------------------------------------------------
+*/
+
+app.use("/api/sensors", sensorRoutes);
+
+/*
+|--------------------------------------------------------------------------
+| Gestion centralisée des erreurs
+|--------------------------------------------------------------------------
+*/
+
+app.use(errorHandler);
+
+/*
+|--------------------------------------------------------------------------
+| Démarrage du serveur
+|--------------------------------------------------------------------------
+*/
+
 const PORT = process.env.PORT || 3000;
 
-/**
- * Démarrage du serveur
- */
 app.listen(PORT, () => {
 
-    console.log(`Serveur lancé sur le port ${PORT}`);
+    console.log("=======================================");
+    console.log(`Serveur démarré sur le port ${PORT}`);
+    console.log("=======================================");
 
 });

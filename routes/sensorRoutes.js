@@ -1,50 +1,162 @@
 /**
- * ------------------------------------------------------------------
- * Fichier : sensorRoutes.js
- * ------------------------------------------------------------------
- * Rôle :
- * Ce fichier définit les différentes routes de l'API REST.
+ * ============================================================
+ * Routes de l'API des capteurs
+ * ------------------------------------------------------------
+ * Ce fichier définit toutes les routes HTTP disponibles.
  *
- * Chaque route est associée à une fonction du contrôleur.
- * ------------------------------------------------------------------
+ * Chaque route appelle une fonction du contrôleur.
+ * ============================================================
  */
 
 const express = require("express");
 
-// Création d'un routeur Express
+// Création du routeur Express
 const router = express.Router();
 
 // Importation des fonctions du contrôleur
 const {
+
+    createSensor,
+
     getAllSensors,
+
     getLastSensor,
+
+    countSensors,
+
     deleteAllSensors,
-    countSensors
+
+    getAlerts,
+
+    getNormal,
+
+    filterByDate,
+
+    dailyHistory,
+
+    weekHistory,
+    
+
+    monthHistory
+
 } = require("../controllers/sensorController");
 
+
 /**
- * GET /
- * Retourne toutes les mesures enregistrées.
+ * ============================================================
+ * Enregistrer une nouvelle mesure
+ * POST /api/sensors
+ * ============================================================
+ */
+router.post("/", createSensor);
+
+
+/**
+ * ============================================================
+ * Récupérer toutes les mesures
+ * GET /api/sensors
+ * ============================================================
  */
 router.get("/", getAllSensors);
 
+
 /**
- * GET /last
- * Retourne uniquement la dernière mesure.
+ * ============================================================
+ * Récupérer la dernière mesure
+ * GET /api/sensors/last
+ * ============================================================
  */
 router.get("/last", getLastSensor);
 
+
 /**
- * GET /count
- * Retourne le nombre total de mesures.
+ * ============================================================
+ * Nombre total de mesures
+ * GET /api/sensors/count
+ * ============================================================
  */
 router.get("/count", countSensors);
 
+
 /**
- * DELETE /
- * Supprime toutes les mesures de la base de données.
+ * ============================================================
+ * Toutes les alertes
+ * GET /api/sensors/alerts
+ * ============================================================
+ */
+router.get("/alerts", getAlerts);
+
+
+/**
+ * ============================================================
+ * Tous les retours à la normale
+ * GET /api/sensors/normal
+ * ============================================================
+ */
+router.get("/normal", getNormal);
+
+
+/**
+ * ============================================================
+ * Filtrer par date
+ * Exemple :
+ *
+ * /api/sensors/date?date=2026-07-04
+ *
+ * ============================================================
+ */
+router.get("/date", filterByDate);
+
+
+/**
+ * ============================================================
+ * Historique journalier
+ *
+ * morning
+ * afternoon
+ * evening
+ * night
+ *
+ * Exemple :
+ *
+ * /api/sensors/history/morning
+ *
+ * ============================================================
+ */
+router.get("/history/:period", dailyHistory);
+
+
+/**
+ * ============================================================
+ * Historique hebdomadaire
+ *
+ * GET /api/sensors/week
+ * ============================================================
+ */
+router.get("/week", weekHistory);
+
+
+/**
+ * ============================================================
+ * Historique mensuel
+ *
+ * GET /api/sensors/month
+ * ============================================================
+ */
+router.get("/month", monthHistory);
+
+
+/**
+ * ============================================================
+ * Supprimer toutes les mesures
+ *
+ * DELETE /api/sensors
+ * ============================================================
  */
 router.delete("/", deleteAllSensors);
 
-// Exportation du routeur
+
+/**
+ * Export du routeur
+ */
 module.exports = router;
